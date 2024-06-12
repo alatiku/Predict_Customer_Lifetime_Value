@@ -19,7 +19,6 @@ format:
       body-width: 1050px
       sidebar-width: 250px
       margin-width:	200px
-keep-ipynb: true
 jupyter: python3
 execute:
   message: false
@@ -167,23 +166,31 @@ The number of purchases is high, which indicates the presence of customers that 
 Calculate and display statistics for each country, including the number of customers, purchases, total revenue, average revenue per customer, average purchase value, and purchase frequency.
 
 ```{python location_stats}
-country_cus = pd.DataFrame(retail_clean.groupby("Country")["CustomerID"].nunique().rename("No_of_Customers"))
-country_pur = pd.DataFrame(retail_clean.groupby("Country")["InvoiceNo"].nunique().rename("NumPurchases"))
-country_rev = pd.DataFrame(retail_clean.groupby("Country")["TotalPrice"].agg("sum").rename("TotalRevenue").round(2))
+country_cus = pd.DataFrame(retail_clean.groupby("Country")["CustomerID"]\
+.nunique().rename("No_of_Customers"))
+country_pur = pd.DataFrame(retail_clean.groupby("Country")["InvoiceNo"]\
+.nunique().rename("NumPurchases"))
+country_rev = pd.DataFrame(retail_clean.groupby("Country")["TotalPrice"]\
+.agg("sum").rename("TotalRevenue").round(2))
 # Join all the dataframes above into 1
 country_data = country_cus.merge(country_pur, 
                                   on = "Country").merge(country_rev, 
                                   on = "Country")
 # Calculate Average revenue per customer for each country
-country_data["Avg_Revenue_per_Customer"] = (country_data["TotalRevenue"] / country_data["No_of_Customers"]).round(2)
-# Calculate Average purchase value each country
-country_data["Avg_Purchase_Value"] = (country_data["TotalRevenue"] / country_data["NumPurchases"]).round(2)
+country_data["Avg_Revenue_per_Customer"] = (country_data["TotalRevenue"]\
+/ country_data["No_of_Customers"]).round(2)
+# Calculate Average purchase value for each country
+country_data["Avg_Purchase_Value"] = (country_data["TotalRevenue"]\
+/ country_data["NumPurchases"]).round(2)
 # Calculate Purchase Frequency for each country
-country_data["Purchase_Frequency"] = (country_data["NumPurchases"] / country_data["No_of_Customers"]).round(2)
+country_data["Purchase_Frequency"] = (country_data["NumPurchases"]\
+/ country_data["No_of_Customers"]).round(2)
 # Print the country statistics data
-# Convert the first 100 rows of country_data to HTML table using tabulate
-table_html2 = tabulate(country_data.sort_values(["No_of_Customers", "NumPurchases"], ascending = False),
-                        headers = "keys", tablefmt = "html")
+# Convert the country_data to HTML table using tabulate
+table_html2 = tabulate(country_data\
+                      .sort_values(["No_of_Customers", "NumPurchases"],
+                                      ascending = False),
+                      headers = "keys", tablefmt = "html")
 # Create the complete HTML with the table and css
 html2 = f"""
 <div style = "height: 600px; width: 1000px; overflow: auto; display: inline-block;">
@@ -203,19 +210,11 @@ United Kingdom, Germany and France are the top 3 countries with the highest numb
 Check the Stock items with the highest revenue and number of purchases
 
 ```{python stock_stats}
-stock_data = retail_clean.groupby("StockCode").agg({"TotalPrice": "sum", "Quantity": "sum"}).sort_values(["TotalPrice", "Quantity"], ascending = False)
-# Print the stock_stats
-# Convert the first 50 rows of stock_data to HTML table using tabulate
-table_html3 = tabulate(stock_data.head(50),
-                        headers = "keys", tablefmt = "html")
-# Create the complete HTML with the table and css
-html3 = f"""
-<div style = "height: 600px; width: 1000px; overflow: auto; display: inline-block;">
-    {table_html3}
-</div>
-"""
-# Display the table
-display(HTML(html3))
+stock_data = retail_clean.groupby("StockCode")\
+             .agg({"TotalPrice": "sum", "Quantity": "sum"})\
+             .sort_values(["TotalPrice", "Quantity"], ascending = False)
+# Print the first 50 rows of stock_stats
+print(stock_data.head(50))
 ```
 
 A list of the top 50 stock items with the highest revenue and number of times each was purchased in the data.
@@ -228,27 +227,34 @@ Calculate and display customer statistics, including total spending, number of p
 
 ```{python customer_stats}
 # Group by Customer to calculate total spending and number of purchases
-customer_data = retail_clean.groupby("CustomerID").agg({"TotalPrice": "sum", "InvoiceNo": "nunique"})
+customer_data = retail_clean.groupby("CustomerID")\
+                .agg({"TotalPrice": "sum", "InvoiceNo": "nunique"})
 # Rename the columns created above
-customer_data.rename(columns={"Total_Purchase_Value": "TotalPrice", "InvoiceNo": "NumPurchases"}, inplace=True)
+customer_data.rename(columns={"Total_Purchase_Value": "TotalPrice",
+                          "InvoiceNo": "NumPurchases"}, inplace=True)
 # Calculate the average revenue per customer
-customer_data["AvgPurchaseValue"] = (customer_data["TotalPrice"] / customer_data["NumPurchases"]).round(2)
+customer_data["AvgPurchaseValue"] = (customer_data["TotalPrice"]\
+                      / customer_data["NumPurchases"]).round(2)
 # Add Country data for each customer
-customer_country = retail_clean[["CustomerID", "Country"]].drop_duplicates()
-customer_data = customer_country.merge(customer_data, on = "CustomerID", 
+customer_country = retail_clean[["CustomerID", "Country"]]\
+                        .drop_duplicates()
+customer_data = customer_country.merge(customer_data, 
+                                        on = "CustomerID", 
                                         how = "left")
 # Print the customer_data
 # Convert the first 100 rows of customer_data to HTML table using tabulate
-table_html4 = tabulate(customer_data.head(100).sort_values(["TotalPrice", "NumPurchases", "AvgPurchaseValue"], ascending = False),
-                        headers = "keys", tablefmt = "html")
+table_html3 = tabulate(customer_data.head(100)\
+        .sort_values(["TotalPrice", "NumPurchases", "AvgPurchaseValue"], 
+                      ascending = False),
+                      headers = "keys", tablefmt = "html")
 # Create the complete HTML with the table and css
-html4 = f"""
+html3 = f"""
 <div style = "height: 600px; width: 1000px; overflow: auto; display: inline-block;">
-    {table_html4}
+    {table_html3}
 </div>
 """
 # Display the table
-display(HTML(html4))
+display(HTML(html3))
 ```
 
 The Customer with the highest number of purchases and total spending is from `EIRE`.
@@ -267,22 +273,31 @@ Calculate CLV for each customer using `AvgPurchaseValue` * `YearlyPurchases`, an
 
 ```{python clv}
 # Calculate first and last purchase date for each customer
-purchase_period = retail_clean.groupby("CustomerID").agg({"InvoiceDate": ["min", "max"]}).reset_index()
+purchase_period = retail_clean.groupby("CustomerID")\
+                  .agg({"InvoiceDate": ["min", "max"]}).reset_index()
 # Rename the columns
 purchase_period.columns =["CustomerID", "FirstPurchase", "LastPurchase"]
 # Combine customer_date with purchase_period
 customer_data = customer_data.merge(purchase_period, on = "CustomerID")
 # Calculate the purchasing period in days for each customer and convert to yearly fraction
-customer_data["LifeSpan"] = (((customer_data["LastPurchase"] - customer_data["FirstPurchase"]).dt.days)/365).round(2)
+customer_data["LifeSpan"] = (((customer_data["LastPurchase"]\
+                          - customer_data["FirstPurchase"])\
+                          .dt.days)/365).round(2)
 # Calculate number of purchases per year for each customer
-customer_data["YearlyPurchases"] = (customer_data["NumPurchases"] / customer_data["LifeSpan"]).round(2)
+customer_data["YearlyPurchases"] = (customer_data["NumPurchases"]\
+                            / customer_data["LifeSpan"]).round(2)
 # Replace infinite values in YearlyPurchases column with Zero
-customer_data["YearlyPurchases"] = customer_data["YearlyPurchases"].replace(np.inf, 0)
+customer_data["YearlyPurchases"] = customer_data["YearlyPurchases"]\
+                                    .replace(np.inf, 0)
 # Calculate CLV for each customer as AvgPurchaseValue * YearlyPurchases
-customer_data["CLV"] = (customer_data["AvgPurchaseValue"] * customer_data["YearlyPurchases"]).round(2)
+customer_data["CLV"] = (customer_data["AvgPurchaseValue"]\
+                  * customer_data["YearlyPurchases"])\
+                  .round(2)
 # Print customer_data
 # Convert the first 100 rows of customer_data to HTML table using tabulate
-table_html4 = tabulate(customer_data.head(100).sort_values(["TotalPrice", "NumPurchases", "AvgPurchaseValue", "LifeSpan", "YearlyPurchases", "CLV"], ascending = False),
+table_html4 = tabulate(customer_data.head(100)\
+        .sort_values(["TotalPrice", "NumPurchases", "AvgPurchaseValue",
+        "LifeSpan", "YearlyPurchases", "CLV"], ascending = False),
                         headers = "keys", tablefmt = "html")
 # Create the complete HTML with the table and css
 html4 = f"""
@@ -351,7 +366,7 @@ reg_accuracy = r2_score(y_test, reg_y_pred).round(2)
 req_mse = root_mean_squared_error(y_test, reg_y_pred).round(2)
 reg_mae = mean_absolute_error(y_test, reg_y_pred).round(2)
 # Print model metrics
-print(f'Linear Regression - Accuracy: {reg_accuracy * 100}%, RMSE: {req_mse}, MAE: {reg_mae}')
+print(f"Linear Regression - Accuracy: {reg_accuracy * 100}%, RMSE: {req_mse}, MAE: {reg_mae}")
 ```
 
 A 43% accuracy for the Linear Regression model makes it a poor choice of model for this task.
@@ -369,7 +384,7 @@ rf_model = RandomForestRegressor(n_estimators = 500,
                                   min_samples_split = 4,
                                   max_features = None,
                                   bootstrap = True,
-                                  criterion = 'friedman_mse',
+                                  criterion = "friedman_mse",
                                   random_state = 42)
 # Train model
 rf_model.fit(X_train, y_train)
@@ -379,7 +394,7 @@ rf_y_pred = rf_model.predict(X_test)
 rf_accuracy = r2_score(y_test, rf_y_pred).round(2)
 rf_mse = mean_squared_error(y_test, rf_y_pred).round(2)
 # Print model metrics
-print(f'Random Forest - Accuracy: {rf_accuracy * 100}%, MSE: {rf_mse}')
+print(f"Random Forest - Accuracy: {rf_accuracy * 100}%, MSE: {rf_mse}")
 ```
 
 A 79% accuracy score for Random Forests model is very acceptable.
@@ -406,7 +421,7 @@ xgb_y_pred = xgb_model.predict(X_test)
 xgb_accuracy = r2_score(y_test, xgb_y_pred).round(2)
 xgb_mse = mean_squared_error(y_test, xgb_y_pred).round(2)
 # Print model metrics
-print(f'XGB Regressor - Accuracy: {xgb_accuracy * 100}%, MSE: {xgb_mse}')
+print(f"XGB Regressor - Accuracy: {xgb_accuracy * 100}%, MSE: {xgb_mse}")
 ```
 
 An 80% score in accuracy for the XGBoost Regressor model is impressive.
@@ -508,18 +523,18 @@ Which features of a customers transaction contribute most to a model predicting 
 rf_importances = best_rf.feature_importances_
 # Create a dataframe for feature importance
 rf_features = pd.DataFrame({
-    'Feature': customer_data.drop(columns=['CLV']).columns,
-    'Importance': rf_importances
+    "Feature": customer_data.drop(columns=["CLV"]).columns,
+    "Importance": rf_importances
 })
 # Sort the dataframe by importance
-rf_features.sort_values(by='Importance', ascending=False, inplace=True)
+rf_features.sort_values(by="Importance", ascending=False, inplace=True)
 # Plot the feature importance
 plt.figure(figsize=(8, 4))
-plt.bar(rf_features['Feature'], rf_features['Importance'])
-plt.ylabel('Importance')
-plt.xlabel('Feature')
+plt.bar(rf_features["Feature"], rf_features["Importance"])
+plt.ylabel("Importance")
+plt.xlabel("Feature")
 plt.xticks(fontsize = 6)
-plt.title('Random Forest Feature Importance')
+plt.title("Random Forest Feature Importance")
 plt.show()
 ```
 
@@ -530,18 +545,18 @@ plt.show()
 xgb_importances = best_xgb.feature_importances_
 # Create a dataframe for feature importance
 xgb_features = pd.DataFrame({
-    'Feature': customer_data.drop(columns=['CLV']).columns,
-    'Importance': xgb_importances
+    "Feature": customer_data.drop(columns=["CLV"]).columns,
+    "Importance": xgb_importances
 })
 # Sort the dataframe by importance
-xgb_features.sort_values(by='Importance', ascending=False, inplace=True)
+xgb_features.sort_values(by="Importance", ascending=False, inplace=True)
 # Plot the feature importance
 plt.figure(figsize=(8, 4))
-plt.bar(xgb_features['Feature'], xgb_features['Importance'])
-plt.ylabel('Importance')
-plt.xlabel('Feature')
+plt.bar(xgb_features["Feature"], xgb_features["Importance"])
+plt.ylabel("Importance")
+plt.xlabel("Feature")
 plt.xticks(fontsize = 6)
-plt.title('XGBoost Feature Importance')
+plt.title("XGBoost Feature Importance")
 plt.show()
 ```
 

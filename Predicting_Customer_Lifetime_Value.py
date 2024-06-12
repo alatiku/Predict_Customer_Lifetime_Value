@@ -156,8 +156,7 @@ reg_accuracy = r2_score(y_test, reg_y_pred).round(2)
 req_mse = root_mean_squared_error(y_test, reg_y_pred).round(2)
 reg_mae = mean_absolute_error(y_test, reg_y_pred).round(2)
 # Print model metrics
-print(f'Linear Regression - Accuracy: {reg_accuracy * 100}%, RMSE: {req_mse}, MAE: {reg_mae}')
-
+print(f"Linear Regression - Accuracy: {reg_accuracy * 100}%, RMSE: {req_mse}, MAE: {reg_mae}")
 
 # Initialize RF model
 rf_model = RandomForestRegressor(n_estimators = 500, 
@@ -165,7 +164,7 @@ rf_model = RandomForestRegressor(n_estimators = 500,
                                   min_samples_split = 4,
                                   max_features = None,
                                   bootstrap = True,
-                                  criterion = 'friedman_mse',
+                                  criterion = "friedman_mse",
                                   random_state = 42)
 # Train model
 rf_model.fit(X_train, y_train)
@@ -175,7 +174,7 @@ rf_y_pred = rf_model.predict(X_test)
 rf_accuracy = r2_score(y_test, rf_y_pred).round(2)
 rf_mse = mean_squared_error(y_test, rf_y_pred).round(2)
 # Print model metrics
-print(f'Random Forest - Accuracy: {rf_accuracy * 100}%, MSE: {rf_mse}')
+print(f"Random Forest - Accuracy: {rf_accuracy * 100}%, MSE: {rf_mse}")
 
 
 # Initialize XGB model
@@ -193,7 +192,7 @@ xgb_y_pred = xgb_model.predict(X_test)
 xgb_accuracy = r2_score(y_test, xgb_y_pred).round(2)
 xgb_mse = mean_squared_error(y_test, xgb_y_pred).round(2)
 # Print model metrics
-print(f'XGB Regressor - Accuracy: {xgb_accuracy * 100}%, MSE: {xgb_mse}')
+print(f"XGB Regressor - Accuracy: {xgb_accuracy * 100}%, MSE: {xgb_mse}")
 
 
 # Define parameter grid
@@ -265,18 +264,18 @@ print(f"XGBoost - Accuracy: {r2_xgb_tune * 100}%, MSE: {mse_xgb_tune}")
 rf_importances = best_rf.feature_importances_
 # Create a dataframe for feature importance
 rf_features = pd.DataFrame({
-    'Feature': customer_data.drop(columns=['CLV']).columns,
-    'Importance': rf_importances
+    "Feature": customer_data.drop(columns=["CLV"]).columns,
+    "Importance": rf_importances
 })
 # Sort the dataframe by importance
-rf_features.sort_values(by='Importance', ascending=False, inplace=True)
+rf_features.sort_values(by="Importance", ascending=False, inplace=True)
 # Plot the feature importance
 plt.figure(figsize=(8, 4))
-plt.bar(rf_features['Feature'], rf_features['Importance'])
-plt.ylabel('Importance')
-plt.xlabel('Feature')
+plt.bar(rf_features["Feature"], rf_features["Importance"])
+plt.ylabel("Importance")
+plt.xlabel("Feature")
 plt.xticks(fontsize = 6)
-plt.title('Random Forest Feature Importance')
+plt.title("Random Forest Feature Importance")
 plt.show()
 
 
@@ -284,16 +283,16 @@ plt.show()
 xgb_importances = best_xgb.feature_importances_
 # Create a dataframe for feature importance
 xgb_features = pd.DataFrame({
-    'Feature': customer_data.drop(columns=['CLV']).columns,
-    'Importance': xgb_importances
+    "Feature": customer_data.drop(columns=["CLV"]).columns,
+    "Importance": xgb_importances
 })
 # Sort the dataframe by importance
-xgb_features.sort_values(by='Importance', ascending=False, inplace=True)
+xgb_features.sort_values(by="Importance", ascending=False, inplace=True)
 # Plot the feature importance
 plt.figure(figsize=(8, 4))
-plt.bar(xgb_features['Feature'], xgb_features['Importance'])
-plt.ylabel('Importance')
-plt.xlabel('Feature')
+plt.bar(xgb_features["Feature"], xgb_features["Importance"])
+plt.ylabel("Importance")
+plt.xlabel("Feature")
 plt.xticks(fontsize = 6)
-plt.title('XGBoost Feature Importance')
+plt.title("XGBoost Feature Importance")
 plt.show()
